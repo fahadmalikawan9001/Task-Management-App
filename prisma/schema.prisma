@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  clerkId   String     @unique
+  email     String     @unique
+  firstName String?
+  lastName  String?
+  avatar    String?
+  theme     String     @default("light")
+  notificationsEnabled Boolean @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  tasks      Task[]
+  categories Category[]
+  comments   Comment[]
+}
+
+model Category {
+  id    String  @id @default(cuid())
+  name  String
+  color String  @default("#3b82f6")
+  userId String
+  user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
+  
+  @@unique([userId, name])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  priority    String    @default("medium") // low, medium, high
+  status      String    @default("todo") // todo, in-progress, done
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags        String[]  @default([])
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  comments Comment[]
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Comment {
+  id      String   @id @default(cuid())
+  content String
+  taskId  String
+  task    Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+}
