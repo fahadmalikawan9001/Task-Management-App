@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 import { useUser } from "@clerk/nextjs"
 import DashboardHeader from "@/components/dashboard/dashboard-header"
 import { Card } from "@/components/ui/card"
@@ -11,11 +12,16 @@ import { Sun, Moon } from "lucide-react"
 
 export default function SettingsPage() {
   const { user } = useUser()
-  const [theme, setTheme] = useState("light")
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [notifications, setNotifications] = useState(true)
   const [emailDigest, setEmailDigest] = useState(false)
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleSaveSettings = async () => {
     setLoading(true)
@@ -43,6 +49,10 @@ export default function SettingsPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!mounted) {
+    return null
   }
 
   return (
