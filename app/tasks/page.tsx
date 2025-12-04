@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import DashboardHeader from "@/components/dashboard/dashboard-header"
 import KanbanBoard from "@/components/tasks/kanban-board"
 import TaskFilters from "@/components/tasks/task-filters"
+import AddTaskForm from "@/components/tasks/add-task-form"
 import { Card } from "@/components/ui/card"
 
 export default function TasksPage() {
@@ -56,6 +57,10 @@ export default function TasksPage() {
     setFilteredTasks(filtered)
   }, [tasks, filters])
 
+  const handleTaskAdded = (newTask: any) => {
+    setTasks([...tasks, newTask])
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader userName="" />
@@ -64,6 +69,8 @@ export default function TasksPage() {
           <h1 className="text-3xl font-bold text-foreground mb-2">All Tasks</h1>
           <p className="text-muted-foreground">Manage and organize your tasks with filters</p>
         </div>
+
+        <AddTaskForm onTaskAdded={handleTaskAdded} />
 
         <TaskFilters filters={filters} onChange={setFilters} />
 
