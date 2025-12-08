@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 import { useUser } from "@clerk/nextjs"
 import DashboardHeader from "@/components/dashboard/dashboard-header"
 import { Card } from "@/components/ui/card"
@@ -11,9 +12,48 @@ import { Sun, Moon } from "lucide-react"
 
 export default function SettingsPage() {
   const { user } = useUser()
-  const [theme, setTheme] = useState("light")
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [notifications, setNotifications] = useState(true)
   const [emailDigest, setEmailDigest] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const handleSaveSettings = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("/api/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          theme,
+          notifications,
+          emailDigest,
+        }),
+      })
+
+      if (response.ok) {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
+      } else {
+        console.error("[v0] Failed to save settings")
+      }
+    } catch (error) {
+      console.error("[v0] Error saving settings:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!mounted) {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -95,8 +135,15 @@ export default function SettingsPage() {
           </div>
         </Card>
 
-        <div className="mt-8">
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Save Settings</Button>
+        <div className="mt-8 flex gap-4">
+          <Button
+            onClick={handleSaveSettings}
+            disabled={loading}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50"
+          >
+            {loading ? "Saving..." : saved ? "Saved!" : "Save Settings"}
+          </Button>
+          {saved && <span className="text-green-600 text-sm flex items-center">Settings saved successfully</span>}
         </div>
       </main>
     </div>

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { SpeedInsights } from "@vercel/speed-insights/next"; // <-- ADDED
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -40,10 +40,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`font-sans antialiased`}>
+        <body className="font-sans antialiased">
           {children}
           <Analytics />
-          <SpeedInsights /> {/* <-- ADDED */}
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>
