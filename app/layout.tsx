@@ -1,13 +1,14 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { ClerkProvider } from "@clerk/nextjs"
-import { ThemeProvider } from "@/components/theme-provider"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "@/components/theme-provider";
+import "./globals.css";
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "TaskFlow - Stay organized. Get things done.",
@@ -30,23 +31,28 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className={`font-sans antialiased`}>
+        <body className="font-sans antialiased">
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             {children}
           </ThemeProvider>
+
+          {/* Vercel Analytics */}
           <Analytics />
+
+          {/* Vercel Speed Insights */}
+          <SpeedInsights />
         </body>
       </html>
     </ClerkProvider>
-  )
+  );
 }
